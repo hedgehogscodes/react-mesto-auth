@@ -1,4 +1,5 @@
 import React from "react";
+import { Route, Switch, Redirect, useHistory } from "react-router-dom";
 import Header from "./Header";
 import Main from "./Main";
 import Footer from "./Footer";
@@ -9,6 +10,11 @@ import AddPlacePopup from "./AddPlacePopup";
 import DeleteCardPopup from "./DeleteCardPopup";
 import { api } from "../utils/api.js";
 import { CurrentUserContext } from "../contexts/CurrentUserContext";
+import ProtectedRoute from "./ProtectedRoute";
+import * as authApi from "../utils/authApi.js";
+
+import Register from "./Register";
+import Login from "./Login";
 
 function App() {
   // ----------------Хуки useState для состояний попапов-------------------------
@@ -28,6 +34,10 @@ function App() {
   //--------Состояние выполнения запроса ----------------------------------------
   const [isLoading, setLoading] = React.useState(false);
   // ----------------------------------------------------------------------------
+
+  const history = useHistory();
+  const [loggedIn, setLoggedIn] = React.useState(false);
+  const [userData, setUserData] = React.useState("");
 
   //--------Функции обрабатывающие нажатия кнопок -------------------------------
   function handleEditAvatarClick(){
@@ -124,6 +134,15 @@ function App() {
       })
       .catch((err) => console.log(`Error ${err}`));
   }
+
+
+  function handleRegister(email, password) {
+    
+  }
+
+  function handleLogin(email, password) {
+    
+  }
 //-----------------------------------------------------------------------------
 
   React.useEffect(() => {
@@ -141,17 +160,37 @@ function App() {
     <CurrentUserContext.Provider value={currentUser}>
       <div className="page">
         <div className="container">
-          <Header />
-          <Main  
-            onEditProfile={handleEditProfileClick}
-            onAddPlace={handleAddPlaceClick}
-            onEditAvatar={handleEditAvatarClick}
-            onCardClick={handleCardClick}
-            cards={cards}
-            onCardDelete={handleDeleteCardClick}
-            onCardLike={handleCardLike}
-          />
-          <Footer />
+        <Header />
+
+          <Switch>
+            <ProtectedRoute
+              exact 
+              path="/"
+              loggedIn={loggedIn}
+              component={Main}
+              onEditProfile={handleEditProfileClick}
+              onAddPlace={handleAddPlaceClick}
+              onEditAvatar={handleEditAvatarClick}
+              onCardClick={handleCardClick}
+              cards={cards}
+              onCardDelete={handleDeleteCardClick}
+              onCardLike={handleCardLike}
+            />
+
+            <Route path="/sign-up">
+              <Register handleRegister={handleRegister} />
+            </Route>
+
+            <Route path="/sign-in">
+              <Login handleLogin={handleLogin} />
+            </Route>
+
+            <Route path="/">
+              {loggedIn ? <Redirect to="/" /> : <Redirect to="/sign-in" />}
+            </Route>
+          </Switch>
+
+          {loggedIn && <Footer/>}
         </div>
 
         <EditAvatarPopup

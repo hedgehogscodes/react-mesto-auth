@@ -1,16 +1,10 @@
+import { apiOptions, checkResponse } from "./utils";
+
 export default class Api {
   constructor(options) {
     this._token = options.baseUrl;
     this._authorization = options.headers.authorization;
     this._contentType = options.headers["Content-Type"];
-  }
-
-  _checkResponse(res) {
-    if (res.ok) {
-      return res.json();
-    }
-
-    return Promise.reject(`Ошибка: ${res.status}`);
   }
 
   //////////////////Setup User Info////////////////////////////////////
@@ -21,7 +15,7 @@ export default class Api {
           authorization: this._authorization
         }
       })
-      .then(this._checkResponse)
+      .then(checkResponse);
   }
   /////////////////////////////////////////////////////////////////////
 
@@ -33,7 +27,7 @@ export default class Api {
           authorization: this._authorization
         }
       })
-      .then(this._checkResponse);
+      .then(checkResponse);
   }
   /////////////////////////////////////////////////////////////////////
 
@@ -50,7 +44,7 @@ export default class Api {
           about: status
         })
       })
-      .then(this._checkResponse);
+      .then(checkResponse);
   }
   /////////////////////////////////////////////////////////////////////
 
@@ -67,7 +61,7 @@ export default class Api {
           link: link
         })
       })
-      .then(this._checkResponse);
+      .then(checkResponse);
   }
   /////////////////////////////////////////////////////////////////////
 
@@ -80,7 +74,7 @@ export default class Api {
           'Content-Type': this._contentType
         }
       })
-      .then(this._checkResponse);
+      .then(checkResponse);
   }
   /////////////////////////////////////////////////////////////////////
 
@@ -92,13 +86,7 @@ export default class Api {
         authorization: this._authorization,
         "Content-Type": this._contentType,
       },
-    }).then((res) => {
-      if (res.ok) {
-        return res.json();
-      }
-
-      return Promise.reject(`Ошибка: ${res.status}`);
-    });
+    }).then(checkResponse);
   }
   /////////////////////////////////////////////////////////////////////
 
@@ -114,15 +102,9 @@ export default class Api {
           avatar: `${link}`
         })
       })
-      .then(this._checkResponse);
+      .then(checkResponse);
   }
    /////////////////////////////////////////////////////////////////////
 }
 
-export const api = new Api({
-  baseUrl: 'https://mesto.nomoreparties.co/v1/cohort-46',
-  headers: {
-    authorization: '52b3031e-4bbf-4230-9679-707716e24a97',
-    'Content-Type': 'application/json'
-  }
-});
+export const api = new Api(apiOptions);

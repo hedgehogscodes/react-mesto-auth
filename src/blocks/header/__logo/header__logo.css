@@ -6,14 +6,12 @@
   background-repeat: no-repeat;
   background-size: 100%;
   display: inline-block;
-  margin-bottom: 45px;
 }
 
 
 @media (max-width: 900px) {
   .header__logo {
     margin-left: 27px;
-    margin-bottom: 36px;
   }
 }
 
@@ -22,6 +20,5 @@
     min-width: 103.74px;
     min-height: 24.4px;
     background-image: url("../../../images/logo480.svg");
-    margin-bottom: 32px;
   }
 }

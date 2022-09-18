@@ -50,3 +50,11 @@
 @import url(./blocks/popup/__btn/_action/popup__btn_action_save.css);
 @import url(./blocks/popup/_opened/popup_opened.css);
 @import url(./blocks/popup/__btn/_disabled/popup__btn_disabled.css);
+
+@import url(./blocks/sign/__button/sign__button.css);
+@import url(./blocks/sign/__form/sign__form.css);
+@import url(./blocks/sign/__input/sign__input.css);
+@import url(./blocks/sign/__link/sign__link.css);
+@import url(./blocks/sign/__text/sign__text.css);
+@import url(./blocks/sign/__title/sign__title.css);
+@import url(./blocks/sign/sign.css);
