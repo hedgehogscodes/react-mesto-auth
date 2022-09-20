@@ -1,5 +1,6 @@
 import React from "react";
 import { Route, Switch, Redirect, useHistory } from "react-router-dom";
+
 import Header from "./Header";
 import Main from "./Main";
 import Footer from "./Footer";
@@ -8,13 +9,19 @@ import EditAvatarPopup from "./EditAvatarPopup";
 import EditProfilePopup from "./EditProfilePopup";
 import AddPlacePopup from "./AddPlacePopup";
 import DeleteCardPopup from "./DeleteCardPopup";
+import InfoTooltip from "./InfoTooltip";
+
 import { api } from "../utils/api.js";
+import * as authApi from "../utils/authApi.js";
+
 import { CurrentUserContext } from "../contexts/CurrentUserContext";
 import ProtectedRoute from "./ProtectedRoute";
-import * as authApi from "../utils/authApi.js";
 
 import Register from "./Register";
 import Login from "./Login";
+
+import successLogo from "../images/Success.svg";
+import failLogo from "../images/Error.svg";
 
 function App() {
   // ----------------Хуки useState для состояний попапов-------------------------
@@ -22,6 +29,7 @@ function App() {
   const [isPopupAddOpen, setIsPopupAddOpen] = React.useState(false);
   const [isPopupAvatarOpen, setIsPopupAvatarOpen] = React.useState(false);
   const [isDeleteCardPopupOpen, setDeleteCardPopupOpen] = React.useState(false);
+  const [isInfoTooltipOpen, setIsInfoTooltipOpen] = React.useState(false);
   // ----------------------------------------------------------------------------
 
   //--------Состояния текущего пользователя, карточки и выбранная карточка-------
@@ -38,6 +46,10 @@ function App() {
   const history = useHistory();
   const [loggedIn, setLoggedIn] = React.useState(false);
   const [userData, setUserData] = React.useState("");
+  const [dataInfoTool, setDataInfoTool] = React.useState({
+    title: "",
+    icon: "",
+  });
 
   //--------Функции обрабатывающие нажатия кнопок -------------------------------
   function handleEditAvatarClick(){
@@ -67,6 +79,12 @@ function App() {
 
   // ----------------------------------------------------------------------------
 
+  //--------Функция для изменения состояния попапа Инфо--------------------------
+  function handleInfoTooltipOpen() {
+    setIsInfoTooltipOpen(true);
+  }
+  // ----------------------------------------------------------------------------
+
   //--------Функция обрабатывающая нажатие кнопки закрытия ----------------------
   function closeAllPopups() {
     setIsPopupAvatarOpen(false);
@@ -75,6 +93,7 @@ function App() {
     setDeleteCardPopupOpen(false);
     setSelectedCard({ isOpen: false });
     setLoading(false);
+    setIsInfoTooltipOpen(false);
   }
   //-----------------------------------------------------------------------------
 
@@ -137,17 +156,77 @@ function App() {
 
 
   function handleRegister(email, password) {
-    
+    authApi
+      .register(email, password)
+      .then((data) => {
+        history.push("/sign-in");
+        setDataInfoTool({ title: "Вы успешно зарегистрировались!", icon: successLogo });
+        handleInfoTooltipOpen();
+      })
+      .catch((err) => {
+        console.error(err);
+        setDataInfoTool({ title: "Что-то пошло не так! Попробуйте ещё раз.", icon: failLogo });
+        handleInfoTooltipOpen();
+      });
   }
 
   function handleLogin(email, password) {
-    
+    authApi
+      .authorize(email, password)
+      .then((data) => {
+        authApi
+          .getContent(data.token)
+          .then((res) => {
+            setUserData(res.data.email);
+          })
+          .catch((err) => {
+            setDataInfoTool({ title: "Что-то пошло не так! Попробуйте ещё раз.", icon: failLogo });
+            console.error(err);
+            handleInfoTooltipOpen();
+          });
+
+        localStorage.setItem("token", data.token);
+        setLoggedIn(true);
+        history.push("/");
+      })
+      .catch((err) => {
+        setDataInfoTool({ title: "Что-то пошло не так! Попробуйте ещё раз.", icon: failLogo });
+        console.error(err);
+        handleInfoTooltipOpen();
+      });
   }
+
+  function signOut() {
+    setLoggedIn(false);
+    setUserData("");
+    localStorage.removeItem("token");
+    history.push("/sign-in");
+  }
+
+  function tokenCheck() {
+    const token = localStorage.getItem("token");
+    if (token) {
+      authApi
+        .getContent(token)
+        .then((res) => {
+          if (res) {
+            setLoggedIn(true);
+            setUserData(res.data.email);
+            history.push("/");
+          } else {
+            setDataInfoTool({ title: "Что-то пошло не так! Попробуйте ещё раз.", icon: failLogo });
+            handleInfoTooltipOpen();
+          }
+        })
+        .catch((err) => console.log(err));
+    }
+  } 
+
 //-----------------------------------------------------------------------------
 
   React.useEffect(() => {
+    tokenCheck();
     const promises = [api.getUserInfo(), api.getInitialCards()];
-
     Promise.all(promises)
       .then(([user, cards]) => {
         setCurrentUser(user);
@@ -160,7 +239,7 @@ function App() {
     <CurrentUserContext.Provider value={currentUser}>
       <div className="page">
         <div className="container">
-        <Header />
+        <Header headerMail={userData} signOut={signOut}/>
 
           <Switch>
             <ProtectedRoute
@@ -226,6 +305,13 @@ function App() {
           card={selectedCard}
           isOpen={selectedCard.isOpen}
           onClose={closeAllPopups}
+        />
+
+        <InfoTooltip
+          isOpen={isInfoTooltipOpen}
+          onClose={closeAllPopups}
+          title={dataInfoTool.title}
+          icon={dataInfoTool.icon}
         />
         
       </div>
