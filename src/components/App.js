@@ -44,12 +44,15 @@ function App() {
   // ----------------------------------------------------------------------------
 
   const history = useHistory();
+
+  //--------Состояние авторизации,почта и сообщение попапа-----------------------
   const [loggedIn, setLoggedIn] = React.useState(false);
   const [userData, setUserData] = React.useState("");
   const [dataInfoTool, setDataInfoTool] = React.useState({
     title: "",
     icon: "",
   });
+  //-----------------------------------------------------------------------------
 
   //--------Функции обрабатывающие нажатия кнопок -------------------------------
   function handleEditAvatarClick(){
@@ -130,7 +133,10 @@ function App() {
       })
       .catch((err) => console.log(`Error ${err}`));
   }
+  //-----------------------------------------------------------------------------
 
+
+  //--------Функции обрабатывающие лайк и удаление карточки --------------------
   function handleCardLike(card) {
     const isLiked = card.likes.some((i) => i._id === currentUser._id);
     api
@@ -153,8 +159,9 @@ function App() {
       })
       .catch((err) => console.log(`Error ${err}`));
   }
+  //-----------------------------------------------------------------------------
 
-
+  //--------Авторизация,регистрация,аутентификация и выход-----------------------
   function handleRegister(email, password) {
     authApi
       .register(email, password)
@@ -221,9 +228,8 @@ function App() {
         .catch((err) => console.log(err));
     }
   } 
-
-//-----------------------------------------------------------------------------
-
+  //-----------------------------------------------------------------------------
+  
   React.useEffect(() => {
     tokenCheck();
     const promises = [api.getUserInfo(), api.getInitialCards()];
