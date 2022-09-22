@@ -181,17 +181,7 @@ function App() {
     authApi
       .authorize(email, password)
       .then((data) => {
-        authApi
-          .getContent(data.token)
-          .then((res) => {
-            setUserData(res.data.email);
-          })
-          .catch((err) => {
-            setDataInfoTool({ title: "Что-то пошло не так! Попробуйте ещё раз.", icon: failLogo });
-            console.error(err);
-            handleInfoTooltipOpen();
-          });
-
+        setUserData(email);
         localStorage.setItem("token", data.token);
         setLoggedIn(true);
         history.push("/");
@@ -210,7 +200,7 @@ function App() {
     history.push("/sign-in");
   }
 
-  function tokenCheck() {
+  function checkToken() {
     const token = localStorage.getItem("token");
     if (token) {
       authApi
@@ -231,7 +221,7 @@ function App() {
   //-----------------------------------------------------------------------------
   
   React.useEffect(() => {
-    tokenCheck();
+    checkToken();
     const promises = [api.getUserInfo(), api.getInitialCards()];
     Promise.all(promises)
       .then(([user, cards]) => {
