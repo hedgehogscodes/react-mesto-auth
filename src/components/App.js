@@ -235,7 +235,7 @@ function App() {
     <CurrentUserContext.Provider value={currentUser}>
       <div className="page">
         <div className="container">
-        <Header headerMail={userData} signOut={signOut}/>
+          <Header headerMail={userData} signOut={signOut}/>
 
           <Switch>
             <ProtectedRoute
