@@ -1,5 +1,6 @@
 import React from "react";
 import { Route, Switch, Redirect, useHistory } from "react-router-dom";
+import { disableBodyScroll, enableBodyScroll, clearAllBodyScrollLocks } from 'body-scroll-lock';
 
 import Header from "./Header";
 import Main from "./Main";
@@ -58,19 +59,23 @@ function App() {
   //--------Функции обрабатывающие нажатия кнопок -------------------------------
   function handleEditAvatarClick(){
     setIsPopupAvatarOpen(true);
+    disableBodyScroll(document.body);
   }
 
   function handleEditProfileClick(){
     setIsPopupEditOpen(true);
+    disableBodyScroll(document.body);
   }
 
   function handleAddPlaceClick(){
     setIsPopupAddOpen(true);
+    disableBodyScroll(document.body);
   }
 
   function handleDeleteCardClick(card) {
     setDeleteCardPopupOpen(true);
     setCardDelete(card);
+    disableBodyScroll(document.body);
   }
 
   function handleCardClick(card) {
@@ -79,6 +84,7 @@ function App() {
       link: card.link,
       title: card.name,
     });
+    disableBodyScroll(document.body);
   }
 
   // ----------------------------------------------------------------------------
@@ -86,6 +92,7 @@ function App() {
   //--------Функция для изменения состояния попапа Инфо--------------------------
   function handleInfoTooltipOpen() {
     setIsInfoTooltipOpen(true);
+    disableBodyScroll(document.body);
   }
   // ----------------------------------------------------------------------------
 
@@ -98,6 +105,7 @@ function App() {
     setSelectedCard({ isOpen: false });
     setLoading(false);
     setIsInfoTooltipOpen(false);
+    enableBodyScroll(document.body);
   }
   //-----------------------------------------------------------------------------
 
