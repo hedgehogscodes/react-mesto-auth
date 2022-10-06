@@ -10,6 +10,7 @@ import EditProfilePopup from "./EditProfilePopup";
 import AddPlacePopup from "./AddPlacePopup";
 import DeleteCardPopup from "./DeleteCardPopup";
 import InfoTooltip from "./InfoTooltip";
+import PopupClose from "./PopupClose";
 
 import { api } from "../utils/api.js";
 import * as authApi from "../utils/authApi.js";
@@ -297,11 +298,13 @@ function App() {
           isLoading={isLoading}
         />
         
-        <ImagePopup
-          card={selectedCard}
-          isOpen={selectedCard.isOpen}
-          onClose={closeAllPopups}
-        />
+        <PopupClose>
+          <ImagePopup
+            card={selectedCard}
+            isOpen={selectedCard.isOpen}
+            onClose={closeAllPopups}
+          />
+        </PopupClose>
 
         <InfoTooltip
           isOpen={isInfoTooltipOpen}
